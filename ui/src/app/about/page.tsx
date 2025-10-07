@@ -3,8 +3,16 @@ import React from "react";
 import { experienceData , educationData,skillData,softSkill }  from "../components/about/Data";
 import ExperienceCard from "../components/about/ExperienceCard";
 import EduCard from "../components/about/EduCard";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/helpers/authOptions";
 
-function page() {
+async function page() {
+
+
+  const session =await getServerSession(authOptions);
+  console.log(session);
+
+
   return (
     <div className="md:p-36 p-5 ">
       <div>
