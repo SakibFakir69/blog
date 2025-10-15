@@ -2,9 +2,10 @@
 
 "use client";
 
+import { useRouter } from 'next/navigation'
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
-import { useForm } from "react-hook-form";
+import { FieldValues, useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
@@ -17,51 +18,69 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { signIn } from "next-auth/react";
+
+import { toast } from "sonner";
+
+import Link from 'next/link';
+
 // zpd
 const loginSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
-  phone: z
-    .string()
-    .min(10, "Phone number must be at least 10 digits")
-    .max(15, "Phone number too long"),
+  
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 function LoginPage() {
+  const router = useRouter();
   const form = useForm({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       name: "",
       email: "",
-      phone: "",
+     
       password: "",
     },
   });
 
   // handel 
 
-  const handleGoogleLogin = (provider: "google" | "github")=>{
-
-    console.log(provider);
-    signIn()
-
-
-  }
+  
 
 
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const onSubmit = async (values: FieldValues) => {
+  console.log("Login data:", values);
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const onSubmit = (values:any) => {
-    console.log("Login data:", values);
-
-    signIn("google",{
-      callbackUrl:"/"
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(values),
+      credentials:"include"
     });
-  };
+
+    const data = await res.json(); // parse JSON response
+    console.log(data)
+
+    if (res.ok && data.status) {
+      // Save token for authenticated routes
+    
+
+      toast.success("Login Successful!");
+      router.push("/dashboard");
+    } else {
+      // Show error from backend
+      toast.error(data.message || "Login failed");
+    }
+  } catch (error) {
+    console.error("Login error:", error);
+    toast.error("Server error occurred");
+  }
+};
+
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-100">
@@ -78,7 +97,7 @@ function LoginPage() {
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Full Name</FormLabel>
+                  <FormLabel> Name</FormLabel>
                   <FormControl>
                     <Input placeholder="Enter your name" {...field} />
                   </FormControl>
@@ -102,20 +121,7 @@ function LoginPage() {
               )}
             />
 
-            {/* Phone */}
-            <FormField
-              control={form.control}
-              name="phone"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Phone</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Enter your phone number" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+           
 
             {/* Password */}
             <FormField
@@ -146,6 +152,11 @@ function LoginPage() {
           </form>
         </Form>
 
+      
+
+       
+        <Link href={'/account/register'}>Create you account</Link>
+
         {/* Divider */}
         <div className="flex items-center my-4">
           <hr className="flex-grow border-gray-300" />
@@ -153,21 +164,10 @@ function LoginPage() {
           <hr className="flex-grow border-gray-300" />
         </div>
 
-        {/* Google Login */}
-        <button onClick={()=> signIn("google",{
-          callbackUrl:'/about'
-        }) } className="flex items-center justify-center w-full border border-gray-300 py-2 rounded-lg hover:bg-gray-50 transition font-medium">
-          <FcGoogle className="text-2xl mr-2" />
-          Login with Google
-        </button>
+        
 
-        {/* Forgot Password */}
-        <p className="text-center text-sm text-gray-500 mt-6">
-          Forgot your password?{" "}
-          <a href="#" className="text-blue-600 hover:underline">
-            Reset here
-          </a>
-        </p>
+        
+
       </div>
     </div>
   );

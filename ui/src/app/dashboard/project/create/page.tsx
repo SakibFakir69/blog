@@ -1,0 +1,211 @@
+"use client";
+import React, { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+
+const projectSchema = z.object({
+  title: z.string().min(1, "Title is required"),
+  description: z.string().optional(),
+  image: z.string().url("Invalid URL").optional(),
+  githubUrl: z.string().url("Invalid URL").optional(),
+  liveUrl: z.string().url("Invalid URL").optional(),
+  techStack: z.string().min(1, "Tech Stack is required"),
+  status: z.enum(["in-progress", "completed", "planned"]),
+});
+
+type ProjectFormValues = z.infer<typeof projectSchema>;
+
+export default function CreateProjectPage() {
+  const [token, setToken] = useState<string | null>(null);
+
+;
+
+  const form = useForm<ProjectFormValues>({
+    resolver: zodResolver(projectSchema),
+    defaultValues: {
+      title: "",
+      description: "",
+      image: "",
+      githubUrl: "",
+      liveUrl: "",
+      techStack: "",
+      status: "in-progress",
+    },
+  });
+
+
+  const onSubmit = async (values: ProjectFormValues) => {
+   
+
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/project/create-project`,
+        {
+          method: "POST",
+          credentials:"include",
+          headers: {
+            "Content-Type": "application/json",
+            
+          },
+          body: JSON.stringify({
+            ...values,
+            techStack: values.techStack.split(",").map((t) => t.trim()),
+          }),
+        }
+      );
+
+      const data = await res.json();
+
+      if (data.status) {
+        alert("✅ Project created successfully!");
+        form.reset();
+      } else {
+        alert(data.message || "❌ Failed to create project");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("⚠️ An error occurred while creating the project");
+    }
+  };
+
+  return (
+    <section className="w-full max-w-6xl">
+      <div className="w-full max-w-6xl mx-auto p-6 bg-white roundedlg shadow border">
+
+      <h1 className="text-2xl font-bold mb-6">Create Project</h1>
+
+      <Form {...form} >
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4 max-w-6xl" >
+          <FormField
+            control={form.control}
+            name="title"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Title</FormLabel>
+                <FormControl>
+                  <Input placeholder="Project Title" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="description"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Description</FormLabel>
+                <FormControl>
+                  <Textarea placeholder="Project description" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="image"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Image URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://example.com/image.jpg" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="githubUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>GitHub URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://github.com/..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="liveUrl"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Live URL</FormLabel>
+                <FormControl>
+                  <Input placeholder="https://yourproject.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <FormField
+            control={form.control}
+            name="techStack"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Tech Stack (comma separated)</FormLabel>
+                <FormControl>
+                  <Input placeholder="React, Node.js, Tailwind..." {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          {/* ✅ Fixed Select handling */}
+          <FormField
+            control={form.control}
+            name="status"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Status</FormLabel>
+                <FormControl>
+                  <Select
+                    onValueChange={field.onChange}
+                    defaultValue={field.value}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select status" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                      <SelectItem value="completed">Completed</SelectItem>
+                      <SelectItem value="planned">Planned</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+
+          <Button type="submit">Create Project</Button>
+        </form>
+      </Form>
+    </div>
+
+    </section>
+  );
+}
