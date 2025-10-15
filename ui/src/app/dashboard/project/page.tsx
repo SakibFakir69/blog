@@ -127,14 +127,14 @@ export default async function ProjectsPage() {
                       </a>
                     )}
                     <Link
-                      href={`/projects/${project.id}`}
+                      href={`/dashboard/project/${project.id}`}
                       className="flex-1 text-center bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition"
                     >
                       Details
                     </Link>
 
                     <DeleteButton id={project?.id}/>
-                    
+
                   </div>
                 </div>
               </div>
