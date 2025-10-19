@@ -3,6 +3,10 @@ import React from "react";
 import Link from "next/link";
 import { cookies } from "next/headers";
 import DeleteButton from "./_components/DeleteButton";
+import Image from "next/image";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export const revalidate = 60; // ISR
 
@@ -20,22 +24,16 @@ interface Project {
 }
 
 const fetchProjects = async (): Promise<Project[]> => {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
   const allCookies = cookieStore.getAll();
   const cookieString = allCookies.map(c => `${c.name}=${c.value}`).join("; ");
 
-  const res = await fetch("http://localhost:5000/api/v1/project/all-project", {
-    headers: {
-      "Content-Type": "application/json",
-      ...(cookieString && { Cookie: cookieString }),
-    },
+  const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/project/all-project`, {
+    headers: { "Content-Type": "application/json", ...(cookieString && { Cookie: cookieString }) },
     next: { revalidate: 60 },
   });
 
-  if (!res.ok) {
-    console.error("Failed to fetch projects:", res.status);
-    return [];
-  }
+  if (!res.ok) return [];
 
   const data = await res.json();
   return data.data || [];
@@ -44,11 +42,9 @@ const fetchProjects = async (): Promise<Project[]> => {
 export default async function ProjectsPage() {
   const allProjects = await fetchProjects();
 
-  // Optional: prefer to show "AI Customer Support System" first if present
+  // Featured first
   const featuredTitle = "AI Customer Support System";
-  const featuredIndex = allProjects.findIndex(
-    (p) => p.title?.toLowerCase() === featuredTitle.toLowerCase()
-  );
+  const featuredIndex = allProjects.findIndex(p => p.title?.toLowerCase() === featuredTitle.toLowerCase());
   if (featuredIndex > -1) {
     const [featured] = allProjects.splice(featuredIndex, 1);
     allProjects.unshift(featured);
@@ -56,88 +52,74 @@ export default async function ProjectsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-10">
-      <div className="max-w-6xl mx-auto px-4">
-        <h1 className="text-4xl font-bold text-gray-900 mb-10 text-center">
-          All Projects
-        </h1>
+      <div className="max-w-7xl mx-auto px-4">
+        <h1 className="text-4xl font-bold text-gray-900 mb-10 text-center">All Projects</h1>
 
         {allProjects.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-8">
-            {allProjects.map((project) => (
-              <div
-                key={project.id}
-                className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
-              >
-                <image
-                  src={project.image || "/placeholder.png"}
-                  alt={project.title}
-                  className="w-full h-48 object-cover"
-                />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {allProjects.map(project => (
+              <Card key={project.id} className="hover:shadow-lg transition-shadow duration-300 flex flex-col">
+                
+                {/* Image */}
+                <div className="relative w-full h-48 rounded-t-xl overflow-hidden bg-gray-100">
+                  <Image
+                    src={project.image || "/placeholder.png"}
+                    alt={project.title || "Project Image"}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
 
-                <div className="p-6 flex flex-col justify-between h-full">
+                <CardContent className="flex-1 flex flex-col justify-between">
                   <div>
-                    <h2 className="text-xl font-semibold text-gray-900 mb-2">
-                      {project.title}
-                    </h2>
-                    <p className="text-gray-600 mb-4 line-clamp-3">
+                    <CardHeader className="p-0 mb-2">
+                      <CardTitle className="text-lg font-semibold">{project.title}</CardTitle>
+                    </CardHeader>
+                    <p className="text-gray-600 text-sm mb-3 line-clamp-3">
                       {project.description || "No description provided."}
                     </p>
 
                     <div className="flex flex-wrap gap-2 mb-3">
-                      {project.techStack?.map((tech, index) => (
-                        <span
-                          key={index}
-                          className="text-xs bg-gray-100 text-gray-800 px-2 py-1 rounded-full"
-                        >
+                      {project.techStack.map((tech, idx) => (
+                        <Badge key={idx} variant="secondary">
                           {tech}
-                        </span>
+                        </Badge>
                       ))}
                     </div>
 
-                    {/* Show actual status */}
-                    <span className={`inline-block text-xs font-medium px-3 py-1 rounded-full
-                      ${project.status?.toLowerCase() === "completed"
-                        ? "bg-green-100 text-green-700"
-                        : "bg-yellow-100 text-yellow-700"
-                      }`}
+                    <Badge
+                      
+                      className="uppercase text-xs font-medium"
                     >
                       {project.status || "in-progress"}
-                    </span>
+                    </Badge>
                   </div>
+                </CardContent>
 
-                  <div className="mt-6 flex gap-3">
-                    {project.liveUrl && (
-                      <a
-                        href={project.liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 text-center bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
-                      >
+                <CardFooter className="flex flex-wrap gap-2 justify-between mt-4">
+                  {project.liveUrl && (
+                    <Button asChild className="flex-1 bg-blue-600 hover:bg-blue-700 text-white">
+                      <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                         Live
                       </a>
-                    )}
-                    {project.githubUrl && (
-                      <a
-                        href={project.githubUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex-1 text-center bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-900 transition"
-                      >
+                    </Button>
+                  )}
+
+                  {project.githubUrl && (
+                    <Button asChild className="flex-1 bg-gray-800 hover:bg-gray-900 text-white">
+                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer">
                         Code
                       </a>
-                    )}
-                    <Link
-                      href={`/dashboard/project/${project.id}`}
-                      className="flex-1 text-center bg-gray-200 text-gray-700 py-2 rounded-lg hover:bg-gray-300 transition"
-                    >
-                      Details
-                    </Link>
+                    </Button>
+                  )}
 
-                    <DeleteButton id={project?.id}/>
+                  <Button asChild className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700">
+                    <Link href={`/dashboard/project/${project.id}`}>Details</Link>
+                  </Button>
 
-                  </div>
-                </div>
-              </div>
+                  <DeleteButton id={project.id} />
+                </CardFooter>
+              </Card>
             ))}
           </div>
         ) : (

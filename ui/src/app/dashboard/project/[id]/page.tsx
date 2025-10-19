@@ -2,6 +2,8 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
+import { toast } from "sonner";
+import Image from "next/image";
 
 interface Project {
   id: string;
@@ -43,7 +45,7 @@ export default function ProjectDetailPage() {
   const fetchProject = async () => {
     try {
       const res = await fetch(
-        `http://localhost:5000/api/v1/project/${projectId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/project/${projectId}`
       );
       const data = await res.json();
       console.log("Fetched project data:", data);
@@ -94,7 +96,7 @@ export default function ProjectDetailPage() {
  const handleUpdate = async (e: React.FormEvent) => {
   e.preventDefault();
   try {
-    const res = await fetch(`http://localhost:5000/api/v1/project/project-update`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/project/project-update`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
    
@@ -116,10 +118,11 @@ export default function ProjectDetailPage() {
     const updated = await res.json();
     setProject(updated.data); // backend sends data
     setEditing(false);
-    alert("✅ Project updated successfully!");
+ 
+    toast.success("✅ Project updated successfully!")
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   } catch (err) {
-    console.error(err);
-    alert("❌ Error updating project!");
+    toast.error("Failed to update project")
   }
 };
 
@@ -129,7 +132,7 @@ export default function ProjectDetailPage() {
       <h1 className="text-2xl font-bold mb-4">{project.title}</h1>
 
       {project.image && (
-        <img
+        <Image
           src={project.image}
           alt={project.title}
           className="w-full h-60 object-cover rounded mb-4"

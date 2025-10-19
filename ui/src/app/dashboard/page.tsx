@@ -1,6 +1,6 @@
 "use client";
 import React, { ReactNode } from "react";
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-react";
+import {  Home, BookOpenIcon,  PackageOpenIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -17,18 +17,20 @@ interface AppSidebarDashboardProps {
 }
 
 const items = [
-  { title: "Home", url: "/dashboard", icon: Home },
-  { title: "Project", url: "/dashboard/project", icon: Inbox },
-  { title: "Create project", url: "/dashboard/project/create", icon: Calendar },
-  { title: "Search", url: "#", icon: Search },
-  { title: "Settings", url: "#", icon: Settings },
+  { title: "Home", url: "/project", icon: Home },
+  { title: "Project", url: "/dashboard/project", icon: PackageOpenIcon },
+  { title: "Create project", url: "/dashboard/project/create", icon:PackageOpenIcon },
+  { title: "blog", url: "/dashboard/blog", icon: BookOpenIcon },
+   { title: "Create blog", url: "/dashboard/blog/create", icon: BookOpenIcon },
+
+
 ];
 
 export default function AppSidebarDashboard({ children }: AppSidebarDashboardProps) {
   return (
-    <div className="flex min-h-screen w-full bg-gray-50">
+    <div className="flex min-h-screen w-full bg-gray-50 ">
       {/* Sidebar */}
-      <Sidebar className="h-screen">
+      <Sidebar className="h-screen py-30">
         <SidebarContent>
           <SidebarGroup>
             <SidebarGroupLabel>Application</SidebarGroupLabel>

@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -16,6 +16,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+
 
 const projectSchema = z.object({
   title: z.string().min(1, "Title is required"),
@@ -30,9 +33,9 @@ const projectSchema = z.object({
 type ProjectFormValues = z.infer<typeof projectSchema>;
 
 export default function CreateProjectPage() {
-  const [token, setToken] = useState<string | null>(null);
+  
 
-;
+  const router = useRouter();
 
   const form = useForm<ProjectFormValues>({
     resolver: zodResolver(projectSchema),
@@ -71,14 +74,21 @@ export default function CreateProjectPage() {
       const data = await res.json();
 
       if (data.status) {
-        alert("✅ Project created successfully!");
+        
+
+        toast.success("✅ Project created successfully!")
+       
         form.reset();
+        router.push('/dashboard/project');
+
+      
       } else {
-        alert(data.message || "❌ Failed to create project");
+       
+              toast.error("✅ Project created successfully!")
       }
     } catch (error) {
       console.error(error);
-      alert("⚠️ An error occurred while creating the project");
+     
     }
   };
 

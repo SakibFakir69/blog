@@ -5,11 +5,14 @@
 
 
 import React from 'react'
+import ProjectsPage from './project/page'
 
 function Home() {
   return (
     <div>
-      <h1>Welcome to home</h1>
+
+      <ProjectsPage/>
+      
       
     </div>
   )

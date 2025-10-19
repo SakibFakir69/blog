@@ -4,7 +4,11 @@ import { SidebarProvider } from "@/components/ui/sidebar";
 
 // type
 
-function DashboardLayouts({ children }) {
+interface ChildrenNode {
+  children:React.ReactNode
+}
+
+function DashboardLayouts({ children }:ChildrenNode) {
   return (
     <div>
       <SidebarProvider>

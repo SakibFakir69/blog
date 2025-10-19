@@ -1,7 +1,13 @@
-import type { NextConfig } from "next";
-
-const nextConfig: NextConfig = {
-  /* config options here */
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+  images: {
+    domains: [
+      "example.com", // ✅ add every external image host you use
+      "img.icons8.com",
+      "thewire.signingdaysports.com","images.unsplash.com"
+    ],
+    // remotePatterns can be used for advanced matching, optional
+  },
 };
 
 export default nextConfig;

@@ -1,5 +1,10 @@
 import Image from "next/image";
 
 export const Logo = () => (
-  <Image width={90} height={90} src="/logo.jpg" alt="Company Logo"></Image>
+  <Image
+    width={48}
+    height={48}
+    src="https://img.icons8.com/color-glass/48/read.png"
+    alt="read"
+  />
 );

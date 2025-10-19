@@ -4,12 +4,15 @@ import { cookies } from "next/headers";
 import { revalidatePath } from "next/cache";
 
 export async function deleteProjectAction(id: string) {
-    const cookieStore = cookies();
-  const allCookies = cookieStore.getAll();
-  const cookieString = allCookies.map(c => `${c.name}=${c.value}`).join("; ");
+    const cookieStore = await cookies(); // Add await here
+  const allCookies = cookieStore.getAll(); // Now getAll() works
+  const cookieString = allCookies
+    .map((c: { name: string; value: string }) => `${c.name}=${c.value}`)
+    .join("; ");
   try {
     // Call your existing backend API
-    const res = await fetch(`http://localhost:5000/api/v1/project/${id}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL
+    }/api/v1/project/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",

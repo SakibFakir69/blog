@@ -2,6 +2,7 @@
 
 import React from "react";
 import { deleteProjectAction } from "../action";
+import { toast } from "sonner";
 
 
 export default function DeleteButton({ id }: { id: string }) {
@@ -13,17 +14,20 @@ export default function DeleteButton({ id }: { id: string }) {
     console.log(success,deleteProjectAction(id) )
 
     if (success) {
-      alert("✅ Project deleted successfully!");
+      
+        toast.success("Project deleted successfully")
+      
       window.location.reload(); // refresh page to reflect deletion
+
     } else {
-      alert("❌ Failed to delete project!");
+     toast.error("❌ Failed to delete project!")
     }
   };
 
   return (
     <button
       onClick={handleDelete}
-      className="text-red-500 hover:text-red-700"
+      className="btn h-9 text-white w-20 rounded bg-red-500  hover:text-red-700"
     >
       Delete
     </button>
