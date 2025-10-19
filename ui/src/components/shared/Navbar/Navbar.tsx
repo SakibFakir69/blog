@@ -22,6 +22,7 @@ const Navbar = () => {
         });
 
         const data = await res.json();
+        console.log(data);
         setIsUser(data?.data || false);
       } catch (error) {
         setIsUser(false);
