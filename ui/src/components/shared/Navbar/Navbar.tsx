@@ -11,27 +11,30 @@ const Navbar = () => {
   const [isUser, setIsUser] = useState(false);
 
   // Fetch current user info on mount
-  useEffect(() => {
-    const UserData = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/me`, {
-          headers: {
-            "Content-Type": "application/json",
-          },
-          credentials: "include", // send cookies
-        });
+ useEffect(() => {
+  const fetchUser = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/me`, {
+        method:"GET",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include", // very important to send HTTP-only cookie
+      });
 
+      if (res.ok) {
         const data = await res.json();
-        console.log(data);
-        setIsUser(data?.data || false);
-      } catch (error) {
-        setIsUser(false);
-        console.error("Fetching user failed:", error);
+        setIsUser(data?.data || false); // user info exists → logged in
+      } else {
+        setIsUser(false); // 401 or other error → not logged in
       }
-    };
+    } catch (error) {
+      setIsUser(false);
+      console.error("Fetching user failed:", error);
+    }
+  };
 
-    UserData();
-  }, []);
+  fetchUser();
+}, []);
+
 
   // Handle logout
   const handleLogout = async () => {

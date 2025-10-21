@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import { z } from "zod";
 import { useForm, FieldValues } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,12 +9,6 @@ import { Form, FormField, FormItem, FormLabel, FormControl, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
-import { signIn } from "next-auth/react"; // ✅ Import signIn
-import { FcGoogle } from "react-icons/fc";
-
-// ✅ Validation schema
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
@@ -26,29 +21,35 @@ function RegisterForm() {
 
   const form = useForm({
     resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
+    defaultValues: { name: "", email: "", password: "" },
   });
 
- 
-
+  const onSubmit = async (data: FieldValues) => {
+    setLoading(true);
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/users/create-user`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.message || "Failed to register");
+      alert(result.message);
+      router.push("/login");
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      alert(err.message || "Something went wrong");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-gray-50">
       <div className="bg-white shadow-lg p-8 rounded-2xl w-full max-w-md">
-        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">
-          Create Your Account
-        </h2>
-
-      
-       
-
-        {/* ✅ Registration Form */}
+        <h2 className="text-2xl font-bold text-center mb-6 text-gray-800">Create Your Account</h2>
         <Form {...form}>
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
             <FormField
               control={form.control}
               name="name"
@@ -62,7 +63,6 @@ function RegisterForm() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="email"
@@ -76,7 +76,6 @@ function RegisterForm() {
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="password"
@@ -90,7 +89,6 @@ function RegisterForm() {
                 </FormItem>
               )}
             />
-
             <Button type="submit" className="w-full mt-4" disabled={loading}>
               {loading ? "Registering..." : "Register"}
             </Button>
