@@ -1,8 +1,6 @@
 import React from "react";
 import Link from "next/link";
 
-import { cookies } from "next/headers";
-
 
 export const revalidate = 60; // ISR every 60 seconds
 

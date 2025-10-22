@@ -12,6 +12,7 @@ interface Blog {
   content: string;
   createdAt: string;
   updatedAt: string;
+  image:string,
 }
 
 // ✅ Fetch all blogs from backend (SSR + ISR)
@@ -68,7 +69,7 @@ export default async function BlogPage() {
               >
                 <div>
 
-                  <Image src={b.image} height={400} width={400} alt={b.title}/>
+                  <Image src={b.image || "https://via.placeholder.com/400x400.png?text=Demo+Image"} height={400} width={400} alt={b.title}/>
 
                   <h2 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-1">
                     {b.title}

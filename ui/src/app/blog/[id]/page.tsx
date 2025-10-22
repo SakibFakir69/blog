@@ -1,14 +1,16 @@
-// app/blog/[id]/page.tsx
 import React from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { notFound } from "next/navigation";
+import DOMPurify from "isomorphic-dompurify"; // For sanitizing HTML content
 
 export const revalidate = 60; // ISR: Rebuild every 60 seconds
 
 interface Blog {
-  _id: string;
+  id: string; // Standardized to match BlogPage
   title: string;
   content: string;
-  image?: string;
+  image?: string; // Optional to allow fallback
   createdAt: string;
 }
 
@@ -18,8 +20,13 @@ async function getBlog(id: string): Promise<Blog | null> {
       next: { revalidate: 60 },
     });
 
-    if (!res.ok) return null;
-    return await res.json();
+    if (!res.ok) {
+      console.error(`Fetch failed with status: ${res.status}`);
+      return null;
+    }
+    const data = await res.json();
+    // Map _id to id for consistency
+    return { ...data, id: data._id || id };
   } catch (err) {
     console.error("Error fetching blog:", err);
     return null;
@@ -27,22 +34,26 @@ async function getBlog(id: string): Promise<Blog | null> {
 }
 
 export default async function BlogDetailsPage({ params }: { params: Promise<{ id: string }> }) {
-  // ✅ Await params first
   const { id } = await params;
-
   const blog = await getBlog(id);
-  console.log(blog)
 
   if (!blog) {
-    return (
-      <div className="flex items-center justify-center h-screen">
-        <p className="text-gray-600 text-lg">Blog not found 😢</p>
-      </div>
-    );
+    notFound(); // Use Next.js notFound for better 404 handling
   }
+
+  // Sanitize content if it contains HTML
+  const sanitizedContent = DOMPurify.sanitize(blog.content);
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
+      {/* Back Button */}
+      <Link
+        href="/blog"
+        className="text-blue-600 hover:underline mb-6 inline-block"
+      >
+        ← Back to Blogs
+      </Link>
+
       {/* Blog Header */}
       <div className="text-center mb-8">
         <h1 className="text-3xl md:text-5xl font-bold mb-2">{blog.title}</h1>
@@ -52,23 +63,21 @@ export default async function BlogDetailsPage({ params }: { params: Promise<{ id
       </div>
 
       {/* Blog Image */}
-      {blog.image && (
-        <div className="w-full h-64 md:h-96 mb-6 overflow-hidden rounded-xl shadow-md">
-          <Image
-            src={blog.image}
-            alt={blog.title}
-            className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-          />
-        </div>
-      )}
-
-      {/* Blog Content */}
-      <div className="prose prose-lg max-w-none text-gray-800 leading-relaxed">
-        {blog.content}
+      <div className="w-full h-64 md:h-96 mb-6 overflow-hidden rounded-xl shadow-md">
+        <Image
+          src={blog.image || "https://via.placeholder.com/400x400.png?text=Demo+Image"}
+          alt={blog.title}
+          width={672} // Matches max-w-3xl (3xl = 672px)
+          height={384} // Matches md:h-96
+          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+        />
       </div>
 
-      {/* Optional back button */}
-      
+      {/* Blog Content */}
+      <div
+        className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
+        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
+      />
     </div>
   );
 }
