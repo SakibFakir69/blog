@@ -2,23 +2,27 @@ import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import DOMPurify from "isomorphic-dompurify"; // For sanitizing HTML content
 
-export const revalidate = 60; // ISR: Rebuild every 60 seconds
+export const revalidate = 60;
 
 interface Blog {
-  id: string; // Standardized to match BlogPage
-  title: string;
-  content: string;
-  image?: string; // Optional to allow fallback
-  createdAt: string;
+  data?: {
+    id: string;
+    title: string;
+    content: string;
+    image?: string;
+    createdAt: Date;
+  };
 }
 
 async function getBlog(id: string): Promise<Blog | null> {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/blog/${id}`, {
-      next: { revalidate: 60 },
-    });
+    const res = await fetch(
+      `${process.env.NEXT_PUBLIC_BACKEND_URL}/blog/${id}`,
+      {
+        next: { revalidate: 60 },
+      }
+    );
 
     if (!res.ok) {
       console.error(`Fetch failed with status: ${res.status}`);
@@ -33,26 +37,24 @@ async function getBlog(id: string): Promise<Blog | null> {
   }
 }
 
-export default async function BlogDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function BlogDetailsPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const { id } = await params;
   const blog = await getBlog(id);
-  
-  
-  
-  const {title,image,content , createdAt} = blog?.data;
+  console.log(blog);
+
+  const { title, image, content, createdAt } = blog?.data || {};
 
   if (!blog) {
-    notFound(); // Use Next.js notFound for better 404 handling
+    notFound();
   }
 
-  // Sanitize content if it contains HTML
-
-  console.log(blog?.data)
-  
-
   return (
-    <div className="max-w-3xl mx-auto px-4 py-10">
-      {/* Back Button */}
+    <div className="max-w-3xl mx-auto px-4 py-28">
+    
       <Link
         href="/blog"
         className="text-blue-600 hover:underline mb-6 inline-block"
@@ -60,32 +62,31 @@ export default async function BlogDetailsPage({ params }: { params: Promise<{ id
         ← Back to Blogs
       </Link>
 
-      {/* Blog Header */}
+     
       <div className="text-center mb-8">
-
         <h1 className="text-3xl md:text-5xl font-bold mb-2">{title}</h1>
         <p className="text-gray-500 text-sm">
-          Published on {new Date(createdAt).toLocaleDateString()}
+          Published on{" "}
+          {createdAt
+            ? new Date(createdAt).toLocaleDateString()
+            : "Unknown date"}
         </p>
       </div>
 
       {/* Blog Image */}
       <div className="w-full h-64 md:h-96 mb-6 overflow-hidden rounded-xl shadow-md">
         <Image
-          src={image || "https://via.placeholder.com/400x400.png?text=Demo+Image"}
-          alt={title 
-            || "title"
+          src={
+            image || "https://via.placeholder.com/400x400.png?text=Demo+Image"
           }
-         
-          width={672} // Matches max-w-3xl (3xl = 672px)
-          height={384} // Matches md:h-96
+          alt={title || "title"}
+          width={672} 
+          height={384} 
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
         />
       </div>
 
       <p>{content}</p>
-
-
     </div>
   );
 }
