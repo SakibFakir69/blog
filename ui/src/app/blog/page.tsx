@@ -15,7 +15,7 @@ interface Blog {
   image:string,
 }
 
-// ✅ Fetch all blogs from backend (SSR + ISR)
+
 async function getAllBlogs(): Promise<Blog[]> {
   try {
    

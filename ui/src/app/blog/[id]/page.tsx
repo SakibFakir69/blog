@@ -36,13 +36,19 @@ async function getBlog(id: string): Promise<Blog | null> {
 export default async function BlogDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const blog = await getBlog(id);
+  
+  
+  
+  const {title,image,content , createdAt} = blog?.data;
 
   if (!blog) {
     notFound(); // Use Next.js notFound for better 404 handling
   }
 
   // Sanitize content if it contains HTML
-  const sanitizedContent = DOMPurify.sanitize(blog.content);
+
+  console.log(blog?.data)
+  
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-10">
@@ -56,28 +62,30 @@ export default async function BlogDetailsPage({ params }: { params: Promise<{ id
 
       {/* Blog Header */}
       <div className="text-center mb-8">
-        <h1 className="text-3xl md:text-5xl font-bold mb-2">{blog.title}</h1>
+
+        <h1 className="text-3xl md:text-5xl font-bold mb-2">{title}</h1>
         <p className="text-gray-500 text-sm">
-          Published on {new Date(blog.createdAt).toLocaleDateString()}
+          Published on {new Date(createdAt).toLocaleDateString()}
         </p>
       </div>
 
       {/* Blog Image */}
       <div className="w-full h-64 md:h-96 mb-6 overflow-hidden rounded-xl shadow-md">
         <Image
-          src={blog.image || "https://via.placeholder.com/400x400.png?text=Demo+Image"}
-          alt={blog.title}
+          src={image || "https://via.placeholder.com/400x400.png?text=Demo+Image"}
+          alt={title 
+            || "title"
+          }
+         
           width={672} // Matches max-w-3xl (3xl = 672px)
           height={384} // Matches md:h-96
           className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
         />
       </div>
 
-      {/* Blog Content */}
-      <div
-        className="prose prose-lg max-w-none text-gray-800 leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: sanitizedContent }}
-      />
+      <p>{content}</p>
+
+
     </div>
   );
 }

@@ -70,12 +70,12 @@ export default async function ProjectsPage() {
               key={project.id}
               className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
             >
-              {/* ✅ Project Image */}
+           
               <div className="relative w-full h-48">
                 
               </div>
 
-              {/* ✅ Project Info */}
+              
               <div className="flex-1 flex flex-col justify-between p-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-1">
@@ -108,7 +108,7 @@ export default async function ProjectsPage() {
                   </span>
                 </div>
 
-                {/* ✅ Buttons */}
+           
                 <div className="mt-6 flex flex-wrap gap-3">
                   {project.liveUrl && (
                     <a
