@@ -1,6 +1,29 @@
 import React from "react";
 import Link from "next/link";
 
+import type {
+  InferGetStaticPropsType,
+  GetStaticProps,
+  GetStaticPaths,
+} from 'next'
+ 
+type Repo = {
+  name: string
+  stargazers_count: number
+}
+
+export const getStaticPaths = (async () => {
+  return {
+    paths: [
+      {
+        params: {
+          name: 'next.js',
+        },
+      }, // See the "paths" section below
+    ],
+    fallback: true, // false or "blocking"
+  }
+}) satisfies GetStaticPaths
 
 export const revalidate = 60; // ISR every 60 seconds
 
