@@ -14,7 +14,7 @@ const Navbar = () => {
  useEffect(() => {
   const fetchUser = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/auth/me`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/me`, {
         method:"GET",
         headers: { "Content-Type": "application/json" },
         credentials: "include", // very important to send HTTP-only cookie

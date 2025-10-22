@@ -1,6 +1,7 @@
 import React from "react";
-import { cookies } from "next/headers";
+
 import Link from "next/link";
+import Image from "next/image";
 
 
 export const revalidate = 60; // ✅ ISR: rebuild every 60 seconds
@@ -16,17 +17,13 @@ interface Blog {
 // ✅ Fetch all blogs from backend (SSR + ISR)
 async function getAllBlogs(): Promise<Blog[]> {
   try {
-    const cookieStore = await cookies(); // Add await here
-  const allCookies = cookieStore.getAll(); // Now getAll() works
-  const cookieString = allCookies
-    .map((c: { name: string; value: string }) => `${c.name}=${c.value}`)
-    .join("; ");
+   
 
     const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/blog/all-blog`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        ...(cookieString && { Cookie: cookieString }),
+       
       },
       next: { revalidate: 60 },
     });
@@ -34,6 +31,7 @@ async function getAllBlogs(): Promise<Blog[]> {
     if (!res.ok) return [];
 
     const data = await res.json();
+    console.log(data)
     return data?.status && Array.isArray(data.data) ? data.data : [];
   } catch (error) {
     console.error("Error fetching blogs:", error);
@@ -69,11 +67,14 @@ export default async function BlogPage() {
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition p-5 flex flex-col justify-between"
               >
                 <div>
+
+                  <Image src={b.image} height={400} width={400} alt={b.title}/>
+
                   <h2 className="text-xl font-semibold text-gray-900 mb-2 line-clamp-1">
                     {b.title}
                   </h2>
                   <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                    {b.content.slice(0,30)}...
+                    {b.content.slice(0,b.content.length-40)}...
                   </p>
                 </div>
 

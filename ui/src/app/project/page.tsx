@@ -19,19 +19,8 @@ interface Project {
   updatedAt: string;
 }
 
-// ✅ Fetch projects (server-side)
 async function fetchProjects(): Promise<Project[]> {
-  // const cookieStore = cookies();
-  // const allCookies =  cookieStore.getAll();
-  // // const cookieString = allCookies.map((c) => `${c.name}=${c.value}`).join("; ");
-  // const cookieString = allCookies
-  // .map((c: { name: string; value: string }) => `${c.name}=${c.value}`)
-  // .join("; ");
-  const cookieStore = await cookies(); // Add await here
-  const allCookies = cookieStore.getAll(); // Now getAll() works
-  const cookieString = allCookies
-    .map((c: { name: string; value: string }) => `${c.name}=${c.value}`)
-    .join("; ");
+ 
 
   try {
     const res = await fetch(
@@ -39,7 +28,7 @@ async function fetchProjects(): Promise<Project[]> {
       {
         headers: {
           "Content-Type": "application/json",
-          ...(cookieString && { Cookie: cookieString }),
+       
         },
         next: { revalidate: 60 },
       }

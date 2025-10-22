@@ -24,12 +24,10 @@ interface Project {
 }
 
 const fetchProjects = async (): Promise<Project[]> => {
-  const cookieStore = await cookies();
-  const allCookies = cookieStore.getAll();
-  const cookieString = allCookies.map(c => `${c.name}=${c.value}`).join("; ");
+
 
   const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/project/all-project`, {
-    headers: { "Content-Type": "application/json", ...(cookieString && { Cookie: cookieString }) },
+    headers: { "Content-Type": "application/json" },
     next: { revalidate: 60 },
   });
 
