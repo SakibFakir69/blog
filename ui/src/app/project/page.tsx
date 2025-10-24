@@ -1,31 +1,16 @@
 import React from "react";
 import Link from "next/link";
 
-import type {
-  InferGetStaticPropsType,
-  GetStaticProps,
-  GetStaticPaths,
-} from 'next'
+
  
 type Repo = {
   name: string
   stargazers_count: number
 }
 
-export const getStaticPaths = (async () => {
-  return {
-    paths: [
-      {
-        params: {
-          name: 'next.js',
-        },
-      }, // See the "paths" section below
-    ],
-    fallback: true, // false or "blocking"
-  }
-}) satisfies GetStaticPaths
 
-export const revalidate = 60; // ISR every 60 seconds
+
+export const revalidate = 60; 
 
 interface Project {
   id: string;
@@ -38,6 +23,7 @@ interface Project {
   status?: string;
   createdAt: string;
   updatedAt: string;
+    features?: string[]; // ✅ array instead of string
 }
 
 async function fetchProjects(): Promise<Project[]> {
@@ -119,6 +105,18 @@ export default async function ProjectsPage() {
                       </span>
                     ))}
                   </div>
+{project.features && project.features.length > 0 && (
+  <div className="mb-3">
+    <h3 className="text-sm font-semibold text-gray-800 mb-1">Features:</h3>
+    <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
+      {project.features.map((feature, index) => (
+        <li key={index}>{feature}</li>
+      ))}
+    </ul>
+  </div>
+)}
+
+
 
                   <span
                     className={`inline-block text-xs font-medium px-3 py-1 rounded-full ${
