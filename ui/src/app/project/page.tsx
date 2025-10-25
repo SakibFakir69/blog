@@ -1,16 +1,12 @@
 import React from "react";
 import Link from "next/link";
 
-
- 
 type Repo = {
-  name: string
-  stargazers_count: number
-}
+  name: string;
+  stargazers_count: number;
+};
 
-
-
-export const revalidate = 60; 
+export const revalidate = 60;
 
 interface Project {
   id: string;
@@ -23,19 +19,16 @@ interface Project {
   status?: string;
   createdAt: string;
   updatedAt: string;
-    features?: string[]; // ✅ array instead of string
+  features?: string[]; // ✅ array instead of string
 }
 
 async function fetchProjects(): Promise<Project[]> {
- 
-
   try {
     const res = await fetch(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/project/all-project`,
       {
         headers: {
           "Content-Type": "application/json",
-       
         },
         next: { revalidate: 60 },
       }
@@ -52,6 +45,7 @@ async function fetchProjects(): Promise<Project[]> {
 
 export default async function ProjectsPage() {
   const projects = await fetchProjects();
+  console.log(projects);
 
   if (!projects.length) {
     return (
@@ -65,7 +59,7 @@ export default async function ProjectsPage() {
       </div>
     );
   }
-
+  
   return (
     <main className="min-h-screen bg-gray-50 py-10">
       <div className="max-w-6xl mx-auto px-4">
@@ -79,12 +73,8 @@ export default async function ProjectsPage() {
               key={project.id}
               className="bg-white rounded-2xl shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col"
             >
-           
-              <div className="relative w-full h-48">
-                
-              </div>
+              <div className="relative w-full h-48"></div>
 
-              
               <div className="flex-1 flex flex-col justify-between p-6">
                 <div>
                   <h2 className="text-xl font-semibold text-gray-800 mb-2 line-clamp-1">
@@ -105,18 +95,18 @@ export default async function ProjectsPage() {
                       </span>
                     ))}
                   </div>
-{project.features && project.features.length > 0 && (
-  <div className="mb-3">
-    <h3 className="text-sm font-semibold text-gray-800 mb-1">Features:</h3>
-    <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
-      {project.features.map((feature, index) => (
-        <li key={index}>{feature}</li>
-      ))}
-    </ul>
-  </div>
-)}
-
-
+                  {project.features && project.features.length > 0 && (
+                    <div className="mb-3">
+                      <h3 className="text-sm font-semibold text-gray-800 mb-1">
+                        Features:
+                      </h3>
+                      <ul className="list-disc list-inside text-gray-600 text-sm space-y-1">
+                        {project.features.map((feature, index) => (
+                          <li key={index}>{feature}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                   <span
                     className={`inline-block text-xs font-medium px-3 py-1 rounded-full ${
@@ -129,7 +119,6 @@ export default async function ProjectsPage() {
                   </span>
                 </div>
 
-           
                 <div className="mt-6 flex flex-wrap gap-3">
                   {project.liveUrl && (
                     <a
@@ -157,8 +146,6 @@ export default async function ProjectsPage() {
                   >
                     Details
                   </Link>
-
-                 
                 </div>
               </div>
             </div>

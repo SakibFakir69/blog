@@ -74,7 +74,7 @@ export default function CreateProjectPage() {
               .filter(Boolean),
             features: values.features
               ? values.features.split(",").map((f) => f.trim()).filter(Boolean)
-              : [], // ✅ convert features to array
+              : [], 
           }),
         }
       );

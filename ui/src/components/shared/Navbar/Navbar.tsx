@@ -17,14 +17,14 @@ const Navbar = () => {
       const res = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/me`, {
         method:"GET",
         headers: { "Content-Type": "application/json" },
-        credentials: "include", // very important to send HTTP-only cookie
+        credentials: "include", // send cookies to server
       });
 
       if (res.ok) {
         const data = await res.json();
-        setIsUser(data?.data || false); // user info exists → logged in
+        setIsUser(data?.data || false); 
       } else {
-        setIsUser(false); // 401 or other error → not logged in
+        setIsUser(false); 
       }
     } catch (error) {
       setIsUser(false);
@@ -45,7 +45,7 @@ const Navbar = () => {
       });
 
       if (res.ok) {
-        setIsUser(false); // update UI state
+        setIsUser(false); // 
       } else {
         console.error("Logout failed:", await res.text());
       }

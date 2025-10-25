@@ -1,24 +1,26 @@
+"use client";
 import React from "react";
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import AppSidebarDashboard from "./page";
-import { SidebarProvider } from "@/components/ui/sidebar";
-
-// type
 
 interface ChildrenNode {
-  children:React.ReactNode
+  children: React.ReactNode;
 }
 
-function DashboardLayouts({ children }:ChildrenNode) {
+function DashboardLayouts({ children }: ChildrenNode) {
   return (
-    <div>
-      <SidebarProvider>
+    <SidebarProvider>
+      <div className="flex min-h-screen w-full bg-gray-50">
+       
+        <header className="fixed top-0 left-0 z-50 flex w-full items-center justify-between bg-white p-4 shadow-md md:hidden">
+          <SidebarTrigger />
+         
+        </header>
 
-      <main className=" min-h-screen w-full">
-          <AppSidebarDashboard>{children}</AppSidebarDashboard>
-      </main>
 
-      </SidebarProvider>
-    </div>
+        <AppSidebarDashboard>{children}</AppSidebarDashboard>
+      </div>
+    </SidebarProvider>
   );
 }
 
