@@ -1,7 +1,7 @@
 
 
 import React from "react";
-import Image from "next/image";
+
 import Link from "next/link";
 
 export const revalidate = 60; // ISR every 60 seconds

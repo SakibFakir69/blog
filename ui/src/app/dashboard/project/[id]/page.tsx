@@ -45,12 +45,12 @@ export default function ProjectDetailPage() {
   const fetchProject = async () => {
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/v1/project/${projectId}`
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}/project/${projectId}`
       );
       const data = await res.json();
       console.log("Fetched project data:", data);
 
-      if (!data.status || !data.data) { // ✅ check for data.data
+      if (!data.status || !data.data) { 
         console.error("Failed to fetch project:", data);
         setProject(null);
         return;
