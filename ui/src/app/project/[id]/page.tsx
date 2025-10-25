@@ -144,7 +144,7 @@ export default async function ProjectDetailsPage({
           {/* Back Link */}
           <div className="mt-8">
             <Link
-              href="/dashboard/project"
+              href="/project"
               className="inline-block text-blue-600 hover:underline"
             >
               ← Back to Projects
